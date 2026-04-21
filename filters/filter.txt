@@ -4,6 +4,17 @@
 ! Strategy: mostly image-only rules and explicit tracking paths.
 
 ! =========================================================
+! TEST SCENARIOS (controlled domains — do not remove)
+! =========================================================
+||mtb-test-block.example^
+||pixel.mtb-test.example^
+||open.mtb-test.example^
+||beacon.mtb-test.example^
+||mtb-test-scoped.example^$domain=sender.mtb-test.example
+mtb-test-css.example##img[data-tracker="true"]
+mtb-test-css.example##img[width="1"][height="1"]
+
+! =========================================================
 ! Yandex (Sender / Metrica)
 ! =========================================================
 ||click.sender.yandex.ru/px/$image
@@ -43,6 +54,13 @@
 ! Shared ESP infrastructure (RU)
 ! =========================================================
 ||read.sendsay.ru^$image
+||mindbox.ru^$image
+||api.mindbox.ru^$image
+||mta.mindbox.ru^$image
+||s1.mbx-sender-01.ru^$image
+||s1.mbx-sender-02.ru^$image
+||s1.mbx-sender-03.ru^$image
+||s1.mail.mbx-sender-06.ru^$image
 
 ! =========================================================
 ! Major global email tracker vendors
@@ -51,6 +69,7 @@
 ||ct.sendgrid.net^$image
 ||e.customeriomail.com/e/o/*$image
 ||track.customer.io^$image
+||customer.io^$image
 ||klclick.com^$image
 ||klclick1.com^$image
 ||static-tracking.klaviyo.com^$image
@@ -59,6 +78,8 @@
 ||email.mailgun.net/o/$image
 ||track.mailgun.org^$image
 ||api.iterable.com^$image
+||github.com/notifications/beacon/$image
+||linkedin.com*emimp$image
 ||tracking.epsilon.com^$image
 ||tracking.go.epsilon.com^$image
 ||tracking.epsilon.postclickmarketing.com^$image

@@ -21,9 +21,11 @@
 		8AB3A5693B05A90690514CA7 /* MailExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 65B6FA15EB157A2450CE577F /* MailExtension.appex */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		9056CD7096566E78C0A9003F /* RulesPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA45DFA35F714DF19886BD1D /* RulesPipeline.swift */; };
 		91F05B085295AFA52DE754B8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 178A52A3E59AF4FB819F9BB8 /* Assets.xcassets */; };
+		9ADBA018F3E70F363B10E059 /* PerfClock.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10C3C47D8B8AF4D36CCAC0B /* PerfClock.swift */; };
 		A2BE38FF835370550521EF5D /* AppGroupConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14E1C807E9F523D4E4F0E16A /* AppGroupConstants.swift */; };
 		A94FCA1AE41BA2786DEB1033 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 438DC84AD2D02EC409F06AE0 /* ContentView.swift */; };
 		A9EBDC13F2E681068F8702B8 /* AppGroupConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14E1C807E9F523D4E4F0E16A /* AppGroupConstants.swift */; };
+		D18CDDE4A6F467C9F7ABBADF /* PerfClock.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10C3C47D8B8AF4D36CCAC0B /* PerfClock.swift */; };
 		DE82FB81A0AA7E8F1350FD89 /* ContentBlockerConverter in Frameworks */ = {isa = PBXBuildFile; productRef = 5CBA5ADD77134E61972B9E91 /* ContentBlockerConverter */; };
 		E8B1E2959410D0A07708CA16 /* MessageSecurityHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86E2886E86F85E1252590857 /* MessageSecurityHandler.swift */; };
 		F6221D76A8678F612F90498C /* MailExtensionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C1197DF3AC840E285EDCC6 /* MailExtensionHandler.swift */; };
@@ -66,6 +68,7 @@
 		ACA0138FC405D78BB96BBB88 /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
 		AD515F9D4E1FBEB62AACFFD0 /* TestEmailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestEmailsView.swift; sourceTree = "<group>"; };
 		BD0D3E6071B5BBAE1BC2F8AD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		C10C3C47D8B8AF4D36CCAC0B /* PerfClock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerfClock.swift; sourceTree = "<group>"; };
 		CF7ACD887DEB8AD8006E97A0 /* ContentBlockerHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentBlockerHandler.swift; sourceTree = "<group>"; };
 		EA386589CA495A4E64442728 /* DebugLogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugLogView.swift; sourceTree = "<group>"; };
 		EA45DFA35F714DF19886BD1D /* RulesPipeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RulesPipeline.swift; sourceTree = "<group>"; };
@@ -137,6 +140,7 @@
 			children = (
 				14E1C807E9F523D4E4F0E16A /* AppGroupConstants.swift */,
 				EF08000A07BA221A7D50C459 /* DebugLogger.swift */,
+				C10C3C47D8B8AF4D36CCAC0B /* PerfClock.swift */,
 				F54F31C42A34E6CF8358F78A /* SharedStorage.swift */,
 				809502DAB4E11AF6EAA0B444 /* TrackerEvent.swift */,
 			);
@@ -192,14 +196,13 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
-				LastUpgradeCheck = 1500;
+				LastUpgradeCheck = 2620;
 				TargetAttributes = {
 					2914B6677BE00156D19EB2DD = {
-						DevelopmentTeam = YOUR_TEAM_ID;
+						DevelopmentTeam = U4FA77588U;
 						ProvisioningStyle = Automatic;
 					};
 					4871054BD99D3D0AE368D9A9 = {
-						DevelopmentTeam = YOUR_TEAM_ID;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -248,6 +251,7 @@
 				A94FCA1AE41BA2786DEB1033 /* ContentView.swift in Sources */,
 				4EF0B4A5C14743EB669731D8 /* DebugLogView.swift in Sources */,
 				0DD1A7DBBCF65C597A2A1208 /* DebugLogger.swift in Sources */,
+				D18CDDE4A6F467C9F7ABBADF /* PerfClock.swift in Sources */,
 				9056CD7096566E78C0A9003F /* RulesPipeline.swift in Sources */,
 				4BCD6343687D5CC6473F233B /* SharedStorage.swift in Sources */,
 				3A169C7442D0CD8526B32391 /* TestEmailGenerator.swift in Sources */,
@@ -266,6 +270,7 @@
 				0DE4C66A6AAB735E3F46A7A1 /* DebugLogger.swift in Sources */,
 				F6221D76A8678F612F90498C /* MailExtensionHandler.swift in Sources */,
 				E8B1E2959410D0A07708CA16 /* MessageSecurityHandler.swift in Sources */,
+				9ADBA018F3E70F363B10E059 /* PerfClock.swift in Sources */,
 				85E1E464D92D516A44ABC89A /* SharedStorage.swift in Sources */,
 				7FFCC207D260C2702369C1FA /* TrackerEvent.swift in Sources */,
 			);
@@ -286,11 +291,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
-				APP_GROUP_ID = "group.YOURNAME.mail-tracker-blocker";
+				APP_GROUP_ID = "group.neshumov.mail-tracker-blocker";
 				CODE_SIGN_ENTITLEMENTS = MailExtension/MailExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = YOUR_TEAM_ID;
+				DEAD_CODE_STRIPPING = YES;
 				INFOPLIST_FILE = MailExtension/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -298,7 +303,8 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "YOURNAME.mail-tracker-blocker.MailExtension";
+				PRODUCT_BUNDLE_IDENTIFIER = "neshumov.mail-tracker-blocker.MailExtension";
+				REGISTER_APP_GROUPS = YES;
 				SDKROOT = macosx;
 			};
 			name = Release;
@@ -307,11 +313,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
-				APP_GROUP_ID = "group.YOURNAME.mail-tracker-blocker";
+				APP_GROUP_ID = "group.neshumov.mail-tracker-blocker";
 				CODE_SIGN_ENTITLEMENTS = MailExtension/MailExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = YOUR_TEAM_ID;
+				DEAD_CODE_STRIPPING = YES;
 				INFOPLIST_FILE = MailExtension/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -319,7 +325,8 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "YOURNAME.mail-tracker-blocker.MailExtension";
+				PRODUCT_BUNDLE_IDENTIFIER = "neshumov.mail-tracker-blocker.MailExtension";
+				REGISTER_APP_GROUPS = YES;
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 			};
@@ -359,9 +366,12 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = U4FA77588U;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -382,6 +392,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.9;
@@ -422,9 +433,12 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = U4FA77588U;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -438,6 +452,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.9;
@@ -447,19 +462,22 @@
 		C85829282B0E11234E5A0008 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				APP_GROUP_ID = "group.YOURNAME.mail-tracker-blocker";
+				APP_GROUP_ID = "group.neshumov.mail-tracker-blocker";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = MailTrackerBlockerApp/MailTrackerBlockerApp.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = YOUR_TEAM_ID;
+				DEAD_CODE_STRIPPING = YES;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_USER_SELECTED_FILES = readwrite;
 				INFOPLIST_FILE = MailTrackerBlockerApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "YOURNAME.mail-tracker-blocker";
+				PRODUCT_BUNDLE_IDENTIFIER = "neshumov.mail-tracker-blocker";
+				REGISTER_APP_GROUPS = YES;
 				SDKROOT = macosx;
 			};
 			name = Release;
@@ -467,19 +485,22 @@
 		D2E62C67B98F418F90DF270E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				APP_GROUP_ID = "group.YOURNAME.mail-tracker-blocker";
+				APP_GROUP_ID = "group.neshumov.mail-tracker-blocker";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = MailTrackerBlockerApp/MailTrackerBlockerApp.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = YOUR_TEAM_ID;
+				DEAD_CODE_STRIPPING = YES;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_USER_SELECTED_FILES = readwrite;
 				INFOPLIST_FILE = MailTrackerBlockerApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "YOURNAME.mail-tracker-blocker";
+				PRODUCT_BUNDLE_IDENTIFIER = "neshumov.mail-tracker-blocker";
+				REGISTER_APP_GROUPS = YES;
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 			};

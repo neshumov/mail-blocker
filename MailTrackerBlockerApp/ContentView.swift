@@ -10,7 +10,6 @@ struct ContentView: View {
     @State private var isRunning: Bool = false
     @State private var errorMessage: String?
     @State private var reloadStatus: String = ""
-    @State private var showLog: Bool = false
     @State private var showStats: Bool = false
     @State private var showTestEmails: Bool = false
 
@@ -34,9 +33,6 @@ struct ContentView: View {
             .padding(20)
         }
         .frame(minWidth: 620, minHeight: 560)
-        .sheet(isPresented: $showLog) {
-            DebugLogView()
-        }
         .sheet(isPresented: $showStats) {
             TrackerStatsView()
         }
@@ -150,12 +146,11 @@ struct ContentView: View {
 
     private var logSection: some View {
         HStack {
-            Label("Debug Log", systemImage: "terminal")
+            Label("Tools", systemImage: "wrench.and.screwdriver")
                 .font(.headline)
             Spacer()
             Button("Test Emails") { showTestEmails = true }
             Button("Tracker Stats") { showStats = true }
-            Button("View Log") { showLog = true }
         }
     }
 

@@ -91,18 +91,8 @@ private func extractBlockedDomains(from rules: [String]) -> [String] {
                 domains.insert(domainPart.lowercased())
             }
         }
-        // Cosmetic rules: domain##selector  (also catches domain#@#selector)
-        if let range = rule.range(of: "##") ?? rule.range(of: "#@#") {
-            let domainPart = String(rule[rule.startIndex..<range.lowerBound])
-            // Skip generic cosmetic (no domain prefix) and tilde-negated
-            if !domainPart.isEmpty, !domainPart.hasPrefix("~"), !domainPart.contains("*") {
-                for d in domainPart.split(separator: ",") {
-                    let clean = d.trimmingCharacters(in: .whitespaces)
-                        .trimmingCharacters(in: CharacterSet(charactersIn: "~"))
-                    if !clean.isEmpty { domains.insert(clean.lowercased()) }
-                }
-            }
-        }
+        // CSS cosmetic rules (domain##selector) are intentionally excluded:
+        // the domain scopes where a rule hides elements, not where the tracker lives.
     }
     return Array(domains).sorted()
 }

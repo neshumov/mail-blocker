@@ -25,7 +25,7 @@ It verifies that:
 ### 1. Set placeholders
 
 This repo is template-ready. Replace placeholders:
-- `YOURNAME` → your reverse-domain prefix (example: `com.acme`)
+- `neshumov` → your reverse-domain prefix (example: `com.acme`)
 - `YOUR_TEAM_ID` → your Apple Developer Team ID (example: `ABCDE12345`)
 
 | File | Setting |

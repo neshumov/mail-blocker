@@ -6213,3 +6213,14 @@ d4?appid*type*
 ||smetrics.nintendo.com/id?d_visid_ver=$xmlhttprequest,redirect=nooptext
 ||citiintl.122.2o7.net/b/ss/citiintlemeapolandprod$image,redirect=1x1-transparent.gif,domain=citibankonline.pl
 ||pdrnetwork.112.2o7.net/b/ss/pdrnetworkpdrnetprod/$image,redirect=2x2-transparent.png,important
+
+! Added coverage for vendors underrepresented after conversion (mail tracking only)
+||mindbox.ru^$image
+||api.mindbox.ru^$image
+||mta.mindbox.ru^$image
+||s1.mbx-sender-01.ru^$image
+||s1.mbx-sender-02.ru^$image
+||s1.mbx-sender-03.ru^$image
+||s1.mail.mbx-sender-06.ru^$image
+||track.customer.io^$image
+||customer.io^$image

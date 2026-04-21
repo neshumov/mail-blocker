@@ -6,25 +6,54 @@ struct SharedStorage {
     static let domainsFileName = "blocked_domains.txt"
     static let eventsFileName  = "tracker_events.json"
 
-    private static var containerURL: URL? {
+    private static let containerURL: URL? = {
         FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: AppGroup.id)
-    }
+    }()
 
-    private static let cacheQueue = DispatchQueue(label: "SharedStorage.cache.queue")
+    private static let rulesQueue = DispatchQueue(label: "SharedStorage.rules.queue")
+    private static let domainsQueue = DispatchQueue(label: "SharedStorage.domains.queue")
+    private static let eventsQueue = DispatchQueue(label: "SharedStorage.events.queue")
     private static var blockedDomainsCache: [String] = []
-    private static var blockedDomainsModifiedAt: Date?
+    private static var blockedDomainsSetCache: Set<String> = []
+    private static var blockedDomainsLoadedAt: Date?
     private static var trackerEventIDsCache: Set<String>?
+    private static var trackerEventsByIDCache: [String: TrackerEvent]?
+    private static var rulesJSONCache: Data?
+    private static var rulesJSONLoadedAt: Date?
 
     // MARK: - Rules JSON
 
     static func saveRulesJSON(_ data: Data) {
         guard let url = containerURL?.appendingPathComponent(rulesFileName) else { return }
         try? data.write(to: url, options: .atomic)
+        rulesQueue.sync {
+            rulesJSONCache = data
+            rulesJSONLoadedAt = Date()
+        }
     }
 
     static func loadRulesJSON() -> Data? {
         guard let url = containerURL?.appendingPathComponent(rulesFileName) else { return nil }
-        return try? Data(contentsOf: url)
+        return rulesQueue.sync {
+            let started = PerfClock.now()
+            if let cached = rulesJSONCache {
+                let elapsedMs = PerfClock.elapsedMs(since: started)
+                if elapsedMs >= 20 {
+                    DebugLogger.log("loadRulesJSON cache-hit: \(cached.count) bytes in \(elapsedMs)ms")
+                }
+                return cached
+            }
+            guard let data = try? Data(contentsOf: url) else {
+                let elapsedMs = PerfClock.elapsedMs(since: started)
+                DebugLogger.log("loadRulesJSON cache-miss: failed read in \(elapsedMs)ms")
+                return nil
+            }
+            rulesJSONCache = data
+            rulesJSONLoadedAt = Date()
+            let elapsedMs = PerfClock.elapsedMs(since: started)
+            DebugLogger.log("loadRulesJSON cache-miss: \(data.count) bytes in \(elapsedMs)ms")
+            return data
+        }
     }
 
     // MARK: - Blocked domains list (for MEMessageActionHandler)
@@ -32,43 +61,81 @@ struct SharedStorage {
     static func saveBlockedDomains(_ domains: [String]) {
         guard let url = containerURL?.appendingPathComponent(domainsFileName) else { return }
         try? domains.joined(separator: "\n").write(to: url, atomically: true, encoding: .utf8)
-        cacheQueue.sync {
+        domainsQueue.sync {
             blockedDomainsCache = domains
-            blockedDomainsModifiedAt = fileModifiedDate(at: url)
+            blockedDomainsSetCache = Set(domains)
+            blockedDomainsLoadedAt = Date()
         }
     }
 
     static func loadBlockedDomains() -> [String] {
         guard let url = containerURL?.appendingPathComponent(domainsFileName) else { return [] }
-        return cacheQueue.sync {
-            let modifiedAt = fileModifiedDate(at: url)
-            if modifiedAt == blockedDomainsModifiedAt {
+        return domainsQueue.sync {
+            let started = PerfClock.now()
+            // Hot path for message decode: avoid touching filesystem for every email.
+            // Rules are refreshed explicitly by pipeline + Mail restart.
+            if !blockedDomainsCache.isEmpty {
+                let elapsedMs = PerfClock.elapsedMs(since: started)
+                if elapsedMs >= 20 {
+                    DebugLogger.log("loadBlockedDomains cache-hit: \(blockedDomainsCache.count) domains in \(elapsedMs)ms")
+                }
                 return blockedDomainsCache
             }
             guard let content = try? String(contentsOf: url, encoding: .utf8) else {
                 blockedDomainsCache = []
-                blockedDomainsModifiedAt = modifiedAt
+                blockedDomainsSetCache = []
+                blockedDomainsLoadedAt = Date()
+                let elapsedMs = PerfClock.elapsedMs(since: started)
+                DebugLogger.log("loadBlockedDomains cache-miss: failed read in \(elapsedMs)ms")
                 return []
             }
             let domains = content.components(separatedBy: .newlines).filter { !$0.isEmpty }
             blockedDomainsCache = domains
-            blockedDomainsModifiedAt = modifiedAt
+            blockedDomainsSetCache = Set(domains)
+            blockedDomainsLoadedAt = Date()
+            let elapsedMs = PerfClock.elapsedMs(since: started)
+            DebugLogger.log("loadBlockedDomains cache-miss: \(domains.count) domains in \(elapsedMs)ms")
             return domains
+        }
+    }
+
+    static func loadBlockedDomainsSet() -> Set<String> {
+        guard let url = containerURL?.appendingPathComponent(domainsFileName) else { return [] }
+        return domainsQueue.sync {
+            if !blockedDomainsSetCache.isEmpty { return blockedDomainsSetCache }
+            guard let content = try? String(contentsOf: url, encoding: .utf8) else {
+                blockedDomainsCache = []
+                blockedDomainsSetCache = []
+                blockedDomainsLoadedAt = Date()
+                return []
+            }
+            let domains = content.components(separatedBy: .newlines).filter { !$0.isEmpty }
+            blockedDomainsCache = domains
+            blockedDomainsSetCache = Set(domains)
+            blockedDomainsLoadedAt = Date()
+            return blockedDomainsSetCache
         }
     }
 
     // MARK: - Tracker events
 
     static func hasTrackerEvent(messageID: String) -> Bool {
-        cacheQueue.sync {
+        eventsQueue.sync {
             ensureTrackerEventIDsLoaded()
             return trackerEventIDsCache?.contains(messageID) ?? false
         }
     }
 
+    static func trackerEvent(messageID: String) -> TrackerEvent? {
+        eventsQueue.sync {
+            ensureTrackerEventsMapLoaded()
+            return trackerEventsByIDCache?[messageID]
+        }
+    }
+
     @discardableResult
     static func appendTrackerEvent(_ event: TrackerEvent) -> Bool {
-        cacheQueue.sync {
+        eventsQueue.sync {
             ensureTrackerEventIDsLoaded()
             if trackerEventIDsCache?.contains(event.messageID) == true { return false }
 
@@ -79,14 +146,17 @@ struct SharedStorage {
                   let data = try? JSONEncoder().encode(events) else { return false }
             try? data.write(to: url, options: .atomic)
             trackerEventIDsCache?.insert(event.messageID)
+            if trackerEventsByIDCache == nil { trackerEventsByIDCache = [:] }
+            trackerEventsByIDCache?[event.messageID] = event
             return true
         }
     }
 
     static func loadTrackerEvents() -> [TrackerEvent] {
-        cacheQueue.sync {
+        eventsQueue.sync {
             let events = loadTrackerEventsUncached()
             trackerEventIDsCache = Set(events.map(\.messageID))
+            trackerEventsByIDCache = Dictionary(uniqueKeysWithValues: events.map { ($0.messageID, $0) })
             return events
         }
     }
@@ -94,8 +164,9 @@ struct SharedStorage {
     static func clearTrackerEvents() {
         guard let url = containerURL?.appendingPathComponent(eventsFileName) else { return }
         try? "[]".write(to: url, atomically: true, encoding: .utf8)
-        cacheQueue.sync {
+        eventsQueue.sync {
             trackerEventIDsCache = []
+            trackerEventsByIDCache = [:]
         }
     }
 
@@ -138,10 +209,20 @@ struct SharedStorage {
 
     private static func ensureTrackerEventIDsLoaded() {
         if trackerEventIDsCache != nil { return }
-        trackerEventIDsCache = Set(loadTrackerEventsUncached().map(\.messageID))
+        let events = loadTrackerEventsUncached()
+        trackerEventIDsCache = Set(events.map(\.messageID))
+        if trackerEventsByIDCache == nil {
+            trackerEventsByIDCache = Dictionary(uniqueKeysWithValues: events.map { ($0.messageID, $0) })
+        }
     }
 
-    private static func fileModifiedDate(at url: URL) -> Date? {
-        (try? FileManager.default.attributesOfItem(atPath: url.path)[.modificationDate]) as? Date
+    private static func ensureTrackerEventsMapLoaded() {
+        if trackerEventsByIDCache != nil { return }
+        let events = loadTrackerEventsUncached()
+        trackerEventsByIDCache = Dictionary(uniqueKeysWithValues: events.map { ($0.messageID, $0) })
+        if trackerEventIDsCache == nil {
+            trackerEventIDsCache = Set(events.map(\.messageID))
+        }
     }
+
 }

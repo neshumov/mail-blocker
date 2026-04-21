@@ -1,10 +1,10 @@
 import Foundation
 
 enum AppGroup {
-    static let id = "group.YOURNAME.mail-tracker-blocker"
+    static let id = "group.neshumov.mail-tracker-blocker"
 }
 
 enum BundleIDs {
-    static let app       = "YOURNAME.mail-tracker-blocker"
-    static let mailExtension = "YOURNAME.mail-tracker-blocker.MailExtension"
+    static let app       = "neshumov.mail-tracker-blocker"
+    static let mailExtension = "neshumov.mail-tracker-blocker.MailExtension"
 }
