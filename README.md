@@ -22,9 +22,11 @@ It verifies that:
 
 ## Setup
 
-### 1. Replace bundle IDs and App Group
+### 1. Set placeholders
 
-Open the files below and replace every `YOURNAME` placeholder with your Apple Developer Team identifier or a unique reverse-domain prefix:
+This repo is template-ready. Replace placeholders:
+- `YOURNAME` → your reverse-domain prefix (example: `com.acme`)
+- `YOUR_TEAM_ID` → your Apple Developer Team ID (example: `ABCDE12345`)
 
 | File | Setting |
 |---|---|
@@ -33,9 +35,14 @@ Open the files below and replace every `YOURNAME` placeholder with your Apple De
 | `MailTrackerBlockerApp/MailTrackerBlockerApp.entitlements` | App Group string |
 | `MailExtension/MailExtension.entitlements` | App Group string |
 
+After replacement, values should look like this:
+- App bundle id: `com.acme.mail-tracker-blocker`
+- Extension bundle id: `com.acme.mail-tracker-blocker.MailExtension`
+- App Group: `group.com.acme.mail-tracker-blocker`
+
 ### 2. Set your Development Team
 
-In `project.yml` set `DEVELOPMENT_TEAM: YOUR_TEAM_ID` for both targets, or open Xcode after generation and set it in the Signing & Capabilities tab.
+In `project.yml` set `DEVELOPMENT_TEAM: YOUR_TEAM_ID` for both targets, or set Team in Xcode Signing & Capabilities.
 
 ### 3. Enable the App Group
 
@@ -48,6 +55,8 @@ make generate
 # or
 make open    # generates and opens in Xcode
 ```
+
+If you changed placeholders after generating once, run `make generate` again.
 
 ---
 

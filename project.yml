@@ -49,11 +49,11 @@ targets:
         codeSign: true
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: dev.neshumov.mail-tracker-blocker
-        APP_GROUP_ID: group.dev.neshumov.mail-tracker-blocker
+        PRODUCT_BUNDLE_IDENTIFIER: YOURNAME.mail-tracker-blocker
+        APP_GROUP_ID: group.YOURNAME.mail-tracker-blocker
         INFOPLIST_FILE: MailTrackerBlockerApp/Info.plist
         CODE_SIGN_ENTITLEMENTS: MailTrackerBlockerApp/MailTrackerBlockerApp.entitlements
-        DEVELOPMENT_TEAM: U4FA77588U
+        DEVELOPMENT_TEAM: YOUR_TEAM_ID
         CODE_SIGN_STYLE: Automatic
       configs:
         Debug:
@@ -71,11 +71,11 @@ targets:
       - path: Shared
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: dev.neshumov.mail-tracker-blocker.MailExtension
-        APP_GROUP_ID: group.dev.neshumov.mail-tracker-blocker
+        PRODUCT_BUNDLE_IDENTIFIER: YOURNAME.mail-tracker-blocker.MailExtension
+        APP_GROUP_ID: group.YOURNAME.mail-tracker-blocker
         INFOPLIST_FILE: MailExtension/Info.plist
         CODE_SIGN_ENTITLEMENTS: MailExtension/MailExtension.entitlements
-        DEVELOPMENT_TEAM: U4FA77588U
+        DEVELOPMENT_TEAM: YOUR_TEAM_ID
         CODE_SIGN_STYLE: Automatic
         APPLICATION_EXTENSION_API_ONLY: YES
       configs:
