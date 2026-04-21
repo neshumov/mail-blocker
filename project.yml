@@ -1,0 +1,83 @@
+name: mail-tracker-blocker
+
+options:
+  deploymentTarget:
+    macOS: "12.0"
+  xcodeVersion: "15"
+  defaultConfig: Debug
+  generateEmptyDirectories: true
+
+schemes:
+  MailTrackerBlockerApp:
+    build:
+      targets:
+        MailTrackerBlockerApp: all
+        MailExtension: [build]
+    run:
+      config: Debug
+    archive:
+      config: Release
+
+packages:
+  SafariConverterLib:
+    url: https://github.com/AdguardTeam/SafariConverterLib
+    from: "4.0.0"
+
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    MACOSX_DEPLOYMENT_TARGET: "12.0"
+
+targets:
+
+  MailTrackerBlockerApp:
+    type: application
+    platform: macOS
+    deploymentTarget: "12.0"
+    sources:
+      - path: MailTrackerBlockerApp
+        excludes:
+          - "**/*.entitlements"
+      - path: Shared
+    resources:
+      - path: filters
+    dependencies:
+      - package: SafariConverterLib
+        product: ContentBlockerConverter
+      - target: MailExtension
+        embed: true
+        codeSign: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.neshumov.mail-tracker-blocker
+        APP_GROUP_ID: group.dev.neshumov.mail-tracker-blocker
+        INFOPLIST_FILE: MailTrackerBlockerApp/Info.plist
+        CODE_SIGN_ENTITLEMENTS: MailTrackerBlockerApp/MailTrackerBlockerApp.entitlements
+        DEVELOPMENT_TEAM: U4FA77588U
+        CODE_SIGN_STYLE: Automatic
+      configs:
+        Debug:
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: DEBUG
+
+  MailExtension:
+    type: app-extension
+    platform: macOS
+    deploymentTarget: "12.0"
+    sources:
+      - path: MailExtension
+        excludes:
+          - "**/*.plist"
+          - "**/*.entitlements"
+      - path: Shared
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.neshumov.mail-tracker-blocker.MailExtension
+        APP_GROUP_ID: group.dev.neshumov.mail-tracker-blocker
+        INFOPLIST_FILE: MailExtension/Info.plist
+        CODE_SIGN_ENTITLEMENTS: MailExtension/MailExtension.entitlements
+        DEVELOPMENT_TEAM: U4FA77588U
+        CODE_SIGN_STYLE: Automatic
+        APPLICATION_EXTENSION_API_ONLY: YES
+      configs:
+        Debug:
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: DEBUG

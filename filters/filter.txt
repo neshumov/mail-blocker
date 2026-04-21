@@ -1,0 +1,70 @@
+! Mail Tracker Blocker — Email-Safe Tracking Filter
+! Updated: 2026-04-21
+! Purpose: block email tracking pixels without breaking normal email rendering.
+! Strategy: mostly image-only rules and explicit tracking paths.
+
+! =========================================================
+! Yandex (Sender / Metrica)
+! =========================================================
+||click.sender.yandex.ru/px/$image
+||feedback.send.yandex.ru/px/$image
+||api.peeper.plus.yandex.net/v1/p/$image
+||mc.yandex.ru^$image
+||amc.yandex.ru^$image
+
+! =========================================================
+! Ozon
+! =========================================================
+||cdns.ozon.ru/v*/mc$image
+||wstat.ozon.ru^$image
+
+! =========================================================
+! Apteka / eApteka
+! =========================================================
+||email.eapteka.ru^$image
+||email.m.eapteka.ru^$image
+||email.mails.apteka.md^$image
+||pixel.apteka.ru^$image
+||track.apteka.ru^$image
+||click.apteka.ru^$image
+
+! =========================================================
+! Timepad / Divan / FixPrice
+! =========================================================
+||email.timepad.ru^$image
+||analytics.divan.ru^$image
+||news.divan.ru^$image
+||promo.divan.ru^$image
+||email.fixprice.ru^$image
+||track.fixprice.ru^$image
+||click.fixprice.ru^$image
+
+! =========================================================
+! Shared ESP infrastructure (RU)
+! =========================================================
+||read.sendsay.ru^$image
+
+! =========================================================
+! Major global email tracker vendors
+! =========================================================
+||awstrack.me^$image
+||ct.sendgrid.net^$image
+||e.customeriomail.com/e/o/*$image
+||track.customer.io^$image
+||klclick.com^$image
+||klclick1.com^$image
+||static-tracking.klaviyo.com^$image
+||telemetrics.klaviyo.com^$image
+||emltrk.com^$image
+||email.mailgun.net/o/$image
+||track.mailgun.org^$image
+||api.iterable.com^$image
+||tracking.epsilon.com^$image
+||tracking.go.epsilon.com^$image
+||tracking.epsilon.postclickmarketing.com^$image
+||eservice.emarsys.net^$image
+
+! Adobe / Omniture trackers in email assets
+||2o7.net^$image
+||omtrdc.net^$image
+||demdex.net^$image
