@@ -6,7 +6,10 @@ struct PipelineResult {
     let sourceRuleCount: Int
     let postPreFilterCount: Int
     let finalJSONEntryCount: Int
-    let jsonData: Data
+    let primaryJSONData: Data
+    let secondaryJSONData: Data?
+    let primaryJSONEntryCount: Int
+    let secondaryJSONEntryCount: Int
     let warnings: [String]
 }
 
@@ -19,13 +22,14 @@ enum PipelineError: LocalizedError {
         switch self {
         case .conversionFailed(let msg): return "Conversion failed: \(msg)"
         case .invalidJSON:               return "SafariConverterLib returned invalid JSON"
-        case .ruleCountExceeded(let n):  return "Rule count \(n) exceeds 150,000 limit"
+        case .ruleCountExceeded(let n):  return "Rule count \(n) exceeds 300,000 combined limit"
         }
     }
 }
 
-private let ruleLimit = 150_000
-private let warnThreshold = 120_000
+private let perExtensionRuleLimit = 150_000
+private let combinedRuleLimit = 300_000
+private let warnThreshold = 270_000
 
 func runPipeline(rulesText: String, stripDomain: Bool, includeCSSDisplayNone: Bool) throws -> PipelineResult {
     let sourceLines = rulesText.components(separatedBy: .newlines)
@@ -36,34 +40,39 @@ func runPipeline(rulesText: String, stripDomain: Bool, includeCSSDisplayNone: Bo
     let preFiltered = preFilter(rules: sourceLines, stripDomain: stripDomain, includeCSSDisplayNone: includeCSSDisplayNone)
     DebugLogger.log("Post pre-filter: \(preFiltered.count) rules")
 
-    let conversionResult = ContentBlockerConverter().convertArray(
-        rules: preFiltered,
-        safariVersion: .safari16,
-        advancedBlocking: false
+    let chunks = splitRulesForTwoExtensions(preFiltered)
+    let primaryConversion = try convertChunk(
+        rules: chunks.primary,
+        includeCSSDisplayNone: includeCSSDisplayNone
+    )
+    let secondaryConversion = try convertChunk(
+        rules: chunks.secondary,
+        includeCSSDisplayNone: includeCSSDisplayNone
     )
 
-    guard let jsonData = conversionResult.safariRulesJSON.data(using: .utf8) else {
-        throw PipelineError.invalidJSON
-    }
-
-    let (finalData, finalCount) = try postFilter(jsonData: jsonData, includeCSSDisplayNone: includeCSSDisplayNone)
+    let finalCount = primaryConversion.count + secondaryConversion.count
 
     var warnings: [String] = []
-    if finalCount > ruleLimit {
+    if finalCount > combinedRuleLimit {
         throw PipelineError.ruleCountExceeded(finalCount)
     }
     if finalCount > warnThreshold {
-        warnings.append("Rule count \(finalCount) is approaching the 150,000 limit")
+        warnings.append("Rule count \(finalCount) is approaching the 300,000 combined limit")
     }
-    if conversionResult.errorsCount > 0 {
-        warnings.append("Converter reported \(conversionResult.errorsCount) error(s)")
+    let totalErrors = primaryConversion.errors + secondaryConversion.errors
+    if totalErrors > 0 {
+        warnings.append("Converter reported \(totalErrors) error(s)")
     }
-    if conversionResult.discardedSafariRules > 0 {
-        warnings.append("\(conversionResult.discardedSafariRules) rule(s) discarded (over limit or unsupported)")
+    let totalDiscarded = primaryConversion.discarded + secondaryConversion.discarded
+    if totalDiscarded > 0 {
+        warnings.append("\(totalDiscarded) rule(s) discarded (over limit or unsupported)")
     }
 
-    let jsonHash = finalData.md5HexString
-    DebugLogger.log("Pipeline complete: \(finalCount) final rules, JSON hash \(jsonHash)")
+    let jsonHashPrimary = primaryConversion.data.md5HexString
+    let jsonHashSecondary = secondaryConversion.data.md5HexString
+    DebugLogger.log(
+        "Pipeline complete: \(finalCount) final rules, ext1=\(primaryConversion.count) hash=\(jsonHashPrimary), ext2=\(secondaryConversion.count) hash=\(jsonHashSecondary)"
+    )
 
     let blockedDomains = extractBlockedDomains(from: preFiltered)
     SharedStorage.saveBlockedDomains(blockedDomains)
@@ -73,28 +82,100 @@ func runPipeline(rulesText: String, stripDomain: Bool, includeCSSDisplayNone: Bo
         sourceRuleCount: sourceRuleCount,
         postPreFilterCount: preFiltered.count,
         finalJSONEntryCount: finalCount,
-        jsonData: finalData,
+        primaryJSONData: primaryConversion.data,
+        secondaryJSONData: secondaryConversion.data,
+        primaryJSONEntryCount: primaryConversion.count,
+        secondaryJSONEntryCount: secondaryConversion.count,
         warnings: warnings
+    )
+}
+
+private func splitRulesForTwoExtensions(_ rules: [String]) -> (primary: [String], secondary: [String]) {
+    guard rules.count > 1 else { return (rules, []) }
+    let pivot = rules.count / 2
+    return (Array(rules.prefix(pivot)), Array(rules.dropFirst(pivot)))
+}
+
+private func convertChunk(
+    rules: [String],
+    includeCSSDisplayNone: Bool
+) throws -> (data: Data, count: Int, errors: Int, discarded: Int) {
+    guard !rules.isEmpty else { return (Data("[]".utf8), 0, 0, 0) }
+
+    let conversionResult = ContentBlockerConverter().convertArray(
+        rules: rules,
+        safariVersion: .safari16,
+        advancedBlocking: false
+    )
+    guard let jsonData = conversionResult.safariRulesJSON.data(using: .utf8) else {
+        throw PipelineError.invalidJSON
+    }
+
+    let (postFilteredData, postFilteredCount) = try postFilter(
+        jsonData: jsonData,
+        includeCSSDisplayNone: includeCSSDisplayNone
+    )
+    guard postFilteredCount <= perExtensionRuleLimit else {
+        throw PipelineError.ruleCountExceeded(postFilteredCount)
+    }
+    return (
+        postFilteredData,
+        postFilteredCount,
+        conversionResult.errorsCount,
+        conversionResult.discardedSafariRules
     )
 }
 
 private func extractBlockedDomains(from rules: [String]) -> [String] {
     var domains: Set<String> = []
     for rule in rules {
-        // Network rules: ||domain^
-        if rule.hasPrefix("||") {
-            let body = rule.dropFirst(2)
-            let domainPart = body.split(omittingEmptySubsequences: true,
-                                        whereSeparator: { $0 == "^" || $0 == "$" }).first
-                .map(String.init) ?? ""
-            if !domainPart.isEmpty, !domainPart.contains("/"), !domainPart.contains("*") {
-                domains.insert(domainPart.lowercased())
-            }
-        }
-        // CSS cosmetic rules (domain##selector) are intentionally excluded:
-        // the domain scopes where a rule hides elements, not where the tracker lives.
+        guard let host = hostFromRule(rule) else { continue }
+        domains.insert(host)
     }
     return Array(domains).sorted()
+}
+
+private func hostFromRule(_ rule: String) -> String? {
+    let trimmed = rule.trimmingCharacters(in: .whitespacesAndNewlines)
+    guard !trimmed.isEmpty else { return nil }
+    if trimmed.hasPrefix("!") || trimmed.hasPrefix("[") { return nil }
+    if trimmed.contains("##") || trimmed.contains("#@#") || trimmed.contains("#$#") || trimmed.contains("#%#") {
+        // Cosmetic/scriptlet rules do not directly point to tracker hosts.
+        return nil
+    }
+
+    var candidate = trimmed
+    if let dollar = candidate.firstIndex(of: "$") {
+        candidate = String(candidate[..<dollar])
+    }
+    if let hash = candidate.firstIndex(of: "#") {
+        candidate = String(candidate[..<hash])
+    }
+
+    candidate = candidate.trimmingCharacters(in: CharacterSet(charactersIn: "@|~. "))
+    if candidate.hasPrefix("||") {
+        candidate.removeFirst(2)
+    } else if candidate.hasPrefix("|") {
+        candidate.removeFirst(1)
+    }
+
+    if let schemeRange = candidate.range(of: "://") {
+        candidate = String(candidate[schemeRange.upperBound...])
+    }
+
+    let stopSet = CharacterSet(charactersIn: "/^*$?,:|")
+    if let r = candidate.rangeOfCharacter(from: stopSet) {
+        candidate = String(candidate[..<r.lowerBound])
+    }
+
+    candidate = candidate.trimmingCharacters(in: CharacterSet(charactersIn: ". "))
+    let lower = candidate.lowercased()
+
+    guard lower.contains(".") else { return nil }
+    guard !lower.contains("*") else { return nil }
+    guard lower.range(of: "^[a-z0-9.-]+$", options: .regularExpression) != nil else { return nil }
+
+    return lower
 }
 
 private func preFilter(rules: [String], stripDomain: Bool, includeCSSDisplayNone: Bool) -> [String] {

@@ -7,12 +7,33 @@ struct TestEmail {
     let description: String
     let fromAddress: String
     let htmlBody: String
+    let contentType: String
+    let plainBody: String?
+
+    init(
+        scenario: String,
+        subject: String,
+        description: String,
+        fromAddress: String,
+        htmlBody: String,
+        contentType: String = "text/html; charset=UTF-8",
+        plainBody: String? = nil
+    ) {
+        self.scenario = scenario
+        self.subject = subject
+        self.description = description
+        self.fromAddress = fromAddress
+        self.htmlBody = htmlBody
+        self.contentType = contentType
+        self.plainBody = plainBody
+    }
 
     var emlContent: String {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US_POSIX")
         formatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss Z"
         let dateStr = formatter.string(from: Date())
+        let body = plainBody ?? htmlBody
         return """
         From: \(fromAddress)
         To: me@localhost
@@ -20,10 +41,10 @@ struct TestEmail {
         Date: \(dateStr)
         Message-ID: <mtb-test-\(scenario)@localhost>
         MIME-Version: 1.0
-        Content-Type: text/html; charset=UTF-8
+        Content-Type: \(contentType)
         X-MTB-Scenario: \(scenario)
 
-        \(htmlBody)
+        \(body)
         """
     }
 }
@@ -37,6 +58,9 @@ enum TestEmailGenerator {
         scenario3_cssDisplayNone,
         scenario4_realWorld,
         scenario5_clean,
+        scenario6_spywareText_ru,
+        scenario7_spywareText_global,
+        scenario8_spywareText_mixed,
     ]
 
     // MARK: - Scenario 1: Basic blocking
@@ -197,6 +221,76 @@ enum TestEmailGenerator {
         <img src="https://clean.mtb-test.example/logo.png" width="200" height="60" alt="Logo">
         <p style="color:gray">If anything is blocked in this email → false positive in rules.</p>
         </body></html>
+        """
+    )
+
+    // MARK: - Scenario 6-8: Plain text emails with real filter_3_Spyware trackers
+
+    static let scenario6_spywareText_ru = TestEmail(
+        scenario: "6",
+        subject: "Scenario 6 — Spyware Text (RU trackers)",
+        description: """
+        Plain text письмо (text/plain) с URL из filter_3_Spyware:
+        click.sender.yandex.ru/px, feedback.send.yandex.ru/px, api.peeper.plus.yandex.net/v1/p,
+        read.sendsay.ru, wstat.ozon.ru.
+        """,
+        fromAddress: "newsletter@retail.example",
+        htmlBody: "",
+        contentType: "text/plain; charset=UTF-8",
+        plainBody: """
+        Scenario 6 (plain text)
+        If detection works, this message should be marked as possible tracker.
+
+        https://click.sender.yandex.ru/px/open.gif?mid=1001
+        https://feedback.send.yandex.ru/px/open.gif?mid=1001
+        https://api.peeper.plus.yandex.net/v1/p/abc123.gif
+        https://read.sendsay.ru/open/track.gif?id=42
+        https://wstat.ozon.ru/pixel.gif?uid=777
+        """
+    )
+
+    static let scenario7_spywareText_global = TestEmail(
+        scenario: "7",
+        subject: "Scenario 7 — Spyware Text (Global vendors)",
+        description: """
+        Plain text письмо (text/plain) с глобальными трекерами из filter_3_Spyware:
+        track.customer.io, ct.sendgrid.net, api.iterable.com,
+        static-tracking.klaviyo.com, telemetrics.klaviyo.com.
+        """,
+        fromAddress: "marketing@global.example",
+        htmlBody: "",
+        contentType: "text/plain; charset=UTF-8",
+        plainBody: """
+        Scenario 7 (plain text)
+        URL list for blocked spyware trackers:
+
+        https://track.customer.io/e/o/xyz
+        https://ct.sendgrid.net/wf/open?upn=test
+        https://api.iterable.com/api/email/open?id=abc
+        https://static-tracking.klaviyo.com/pixel.gif?m=1
+        https://telemetrics.klaviyo.com/collect/open?id=2
+        """
+    )
+
+    static let scenario8_spywareText_mixed = TestEmail(
+        scenario: "8",
+        subject: "Scenario 8 — Spyware Text (Encoded + mixed)",
+        description: """
+        Plain text письмо с mixed/encoded трекерами из spyware-паттернов.
+        Проверяет, что детект цепляет и обычные, и URL-encoded варианты.
+        """,
+        fromAddress: "batch@notifications.example",
+        htmlBody: "",
+        contentType: "text/plain; charset=UTF-8",
+        plainBody: """
+        Scenario 8 (plain text)
+        Normal:
+        https://click.sender.yandex.ru/px/p.gif
+        https://github.com/notifications/beacon/abc.gif
+
+        Encoded:
+        https%3A%2F%2Ffeedback.send.yandex.ru%2Fpx%2Fopen.gif
+        https%3A%2F%2Fapi.peeper.plus.yandex.net%2Fv1%2Fp%2Fid.gif
         """
     )
 

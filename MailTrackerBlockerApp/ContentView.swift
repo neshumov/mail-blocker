@@ -113,10 +113,12 @@ struct ContentView: View {
                 statRow(label: "Source rules:", value: "\(result.sourceRuleCount)")
                 statRow(label: "Post pre-filter:", value: "\(result.postPreFilterCount)")
                 statRow(
-                    label: "Final JSON entries:",
-                    value: "\(result.finalJSONEntryCount) / 150,000",
-                    valueColor: result.finalJSONEntryCount > 120_000 ? .orange : .primary
+                    label: "Total entries:",
+                    value: "\(result.finalJSONEntryCount) / 300,000",
+                    valueColor: result.finalJSONEntryCount > 270_000 ? .orange : .primary
                 )
+                statRow(label: "Extension 1:", value: "\(result.primaryJSONEntryCount) / 150,000")
+                statRow(label: "Extension 2:", value: "\(result.secondaryJSONEntryCount) / 150,000")
             }
             .font(.system(.body, design: .monospaced))
 
@@ -139,7 +141,7 @@ struct ContentView: View {
         VStack(alignment: .leading, spacing: 6) {
             Label("Enable Extension", systemImage: "info.circle")
                 .font(.headline)
-            Text("Open Mail → Settings → Extensions → enable **Mail Tracker Blocker Extension**, then run the pipeline.")
+            Text("Open Mail → Settings → Extensions → enable **Mail Tracker Blocker Extension** and **Mail Tracker Blocker Extension 2**, then run the pipeline.")
                 .fixedSize(horizontal: false, vertical: true)
         }
     }
@@ -182,8 +184,13 @@ struct ContentView: View {
                     stripDomain: capturedStrip,
                     includeCSSDisplayNone: capturedCSS
                 )
-                SharedStorage.saveRulesJSON(result.jsonData)
-                DebugLogger.log("Saved \(result.jsonData.count) bytes to App Group storage")
+                SharedStorage.saveRulesJSON(
+                    primary: result.primaryJSONData,
+                    secondary: result.secondaryJSONData
+                )
+                DebugLogger.log(
+                    "Saved rules to App Group: ext1=\(result.primaryJSONData.count) bytes, ext2=\(result.secondaryJSONData?.count ?? 2) bytes"
+                )
 
                 await triggerExtensionReload()
 

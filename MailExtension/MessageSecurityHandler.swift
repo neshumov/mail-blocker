@@ -114,16 +114,11 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
             shouldBlockRemoteContent: true,
             localizedRemoteContentBlockingReason: reason
         )
-        let banner = MEDecodedMessageBanner(
-            title: "Blocked possible tracker",
-            primaryActionTitle: "Details",
-            dismissable: true
-        )
         return MEDecodedMessage(
             data: data,
             securityInformation: secInfo,
             context: nil,
-            banner: banner
+            banner: nil
         )
     }
 

@@ -13,6 +13,7 @@ schemes:
       targets:
         MailTrackerBlockerApp: all
         MailExtension: [build]
+        MailExtension2: [build]
     run:
       config: Debug
     archive:
@@ -47,6 +48,9 @@ targets:
       - target: MailExtension
         embed: true
         codeSign: true
+      - target: MailExtension2
+        embed: true
+        codeSign: true
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: neshumov.mail-tracker-blocker
@@ -75,6 +79,29 @@ targets:
         APP_GROUP_ID: group.neshumov.mail-tracker-blocker
         INFOPLIST_FILE: MailExtension/Info.plist
         CODE_SIGN_ENTITLEMENTS: MailExtension/MailExtension.entitlements
+        DEVELOPMENT_TEAM: U4FA77588U
+        CODE_SIGN_STYLE: Automatic
+        APPLICATION_EXTENSION_API_ONLY: YES
+      configs:
+        Debug:
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: DEBUG
+
+  MailExtension2:
+    type: app-extension
+    platform: macOS
+    deploymentTarget: "12.0"
+    sources:
+      - path: MailExtension
+        excludes:
+          - "**/*.plist"
+          - "**/*.entitlements"
+      - path: Shared
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: neshumov.mail-tracker-blocker.MailExtension2
+        APP_GROUP_ID: group.neshumov.mail-tracker-blocker
+        INFOPLIST_FILE: MailExtension2/Info.plist
+        CODE_SIGN_ENTITLEMENTS: MailExtension2/MailExtension2.entitlements
         DEVELOPMENT_TEAM: U4FA77588U
         CODE_SIGN_STYLE: Automatic
         APPLICATION_EXTENSION_API_ONLY: YES

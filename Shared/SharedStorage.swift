@@ -1,7 +1,9 @@
 import Foundation
 
 struct SharedStorage {
-    static let rulesFileName   = "mail_tracker_rules.json"
+    static let rulesFileNamePrimary   = "mail_tracker_rules_primary.json"
+    static let rulesFileNameSecondary = "mail_tracker_rules_secondary.json"
+    static let rulesFileNameLegacy    = "mail_tracker_rules.json"
     static let logFileName     = "mail_tracker_debug.log"
     static let domainsFileName = "blocked_domains.txt"
     static let eventsFileName  = "tracker_events.json"
@@ -18,37 +20,78 @@ struct SharedStorage {
     private static var blockedDomainsLoadedAt: Date?
     private static var trackerEventIDsCache: Set<String>?
     private static var trackerEventsByIDCache: [String: TrackerEvent]?
-    private static var rulesJSONCache: Data?
+    private static var rulesJSONPrimaryCache: Data?
+    private static var rulesJSONSecondaryCache: Data?
     private static var rulesJSONLoadedAt: Date?
 
     // MARK: - Rules JSON
 
-    static func saveRulesJSON(_ data: Data) {
-        guard let url = containerURL?.appendingPathComponent(rulesFileName) else { return }
-        try? data.write(to: url, options: .atomic)
+    static func saveRulesJSON(primary data: Data, secondary: Data?) {
+        guard let containerURL else { return }
+        let primaryURL = containerURL.appendingPathComponent(rulesFileNamePrimary)
+        try? data.write(to: primaryURL, options: .atomic)
+
+        let secondaryURL = containerURL.appendingPathComponent(rulesFileNameSecondary)
+        if let secondary {
+            try? secondary.write(to: secondaryURL, options: .atomic)
+        } else {
+            try? Data("[]".utf8).write(to: secondaryURL, options: .atomic)
+        }
+
+        // Keep legacy file for backward compatibility with old single-extension builds.
+        let legacyURL = containerURL.appendingPathComponent(rulesFileNameLegacy)
+        try? data.write(to: legacyURL, options: .atomic)
+
         rulesQueue.sync {
-            rulesJSONCache = data
+            rulesJSONPrimaryCache = data
+            rulesJSONSecondaryCache = secondary ?? Data("[]".utf8)
             rulesJSONLoadedAt = Date()
         }
     }
 
-    static func loadRulesJSON() -> Data? {
-        guard let url = containerURL?.appendingPathComponent(rulesFileName) else { return nil }
+    static func loadRulesJSON(for bundleID: String) -> Data? {
+        guard let containerURL else { return nil }
+        let isSecondary = (bundleID == BundleIDs.mailExtension2)
+        let rulesFileName = isSecondary ? rulesFileNameSecondary : rulesFileNamePrimary
+        let url = containerURL.appendingPathComponent(rulesFileName)
+
         return rulesQueue.sync {
             let started = PerfClock.now()
-            if let cached = rulesJSONCache {
+            if isSecondary, let cached = rulesJSONSecondaryCache {
                 let elapsedMs = PerfClock.elapsedMs(since: started)
                 if elapsedMs >= 20 {
-                    DebugLogger.log("loadRulesJSON cache-hit: \(cached.count) bytes in \(elapsedMs)ms")
+                    DebugLogger.log("loadRulesJSON secondary cache-hit: \(cached.count) bytes in \(elapsedMs)ms")
                 }
                 return cached
             }
-            guard let data = try? Data(contentsOf: url) else {
+            if !isSecondary, let cached = rulesJSONPrimaryCache {
+                let elapsedMs = PerfClock.elapsedMs(since: started)
+                if elapsedMs >= 20 {
+                    DebugLogger.log("loadRulesJSON primary cache-hit: \(cached.count) bytes in \(elapsedMs)ms")
+                }
+                return cached
+            }
+
+            // Compatibility path for primary extension only: old apps wrote a single legacy file.
+            let readURL: URL
+            if FileManager.default.fileExists(atPath: url.path) {
+                readURL = url
+            } else if !isSecondary {
+                readURL = containerURL.appendingPathComponent(rulesFileNameLegacy)
+            } else {
+                return Data("[]".utf8)
+            }
+
+            guard let data = try? Data(contentsOf: readURL) else {
                 let elapsedMs = PerfClock.elapsedMs(since: started)
                 DebugLogger.log("loadRulesJSON cache-miss: failed read in \(elapsedMs)ms")
                 return nil
             }
-            rulesJSONCache = data
+            if isSecondary {
+                rulesJSONSecondaryCache = data
+            } else {
+                rulesJSONPrimaryCache = data
+            }
             rulesJSONLoadedAt = Date()
             let elapsedMs = PerfClock.elapsedMs(since: started)
             DebugLogger.log("loadRulesJSON cache-miss: \(data.count) bytes in \(elapsedMs)ms")

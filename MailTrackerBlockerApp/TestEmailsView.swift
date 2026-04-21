@@ -107,8 +107,9 @@ private struct TestEmailRow: View {
     private func addToInbox(_ email: TestEmail) {
         let subject = email.subject.replacingOccurrences(of: "\"", with: "'")
         let sender  = email.fromAddress.replacingOccurrences(of: "\"", with: "'")
-        // Strip HTML tags for plain-text AppleScript content
-        let plain   = email.htmlBody
+        let basePlain = email.plainBody ?? email.htmlBody
+        // Strip HTML tags only for HTML scenarios
+        let plain = basePlain
             .replacingOccurrences(of: "<[^>]+>", with: " ", options: .regularExpression)
             .replacingOccurrences(of: "\"", with: "'")
             .trimmingCharacters(in: .whitespacesAndNewlines)

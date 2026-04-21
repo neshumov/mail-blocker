@@ -3,7 +3,8 @@ import MailKit
 class ContentBlockerHandler: NSObject, MEContentBlocker {
     func contentRulesJSON() -> Data {
         let started = PerfClock.now()
-        guard let data = SharedStorage.loadRulesJSON() else {
+        let bundleID = Bundle.main.bundleIdentifier ?? BundleIDs.mailExtension
+        guard let data = SharedStorage.loadRulesJSON(for: bundleID) else {
             let elapsedMs = PerfClock.elapsedMs(since: started)
             DebugLogger.log("contentRulesJSON: no rules, returning [] (\(elapsedMs)ms)")
             return Data("[]".utf8)

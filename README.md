@@ -6,7 +6,7 @@ It verifies that:
 - `MEContentBlocker` loads and is applied by Mail.app
 - `if-domain`/`unless-domain` behaviour in the Mail rendering context
 - `css-display-none` applicability in email rendering
-- The rule conversion pipeline stays within the 150,000-rule budget
+- The rule conversion pipeline stays within the 300,000 combined budget (2 extensions × 150,000)
 
 **Reference implementation:** [ameshkov/safari-blocker](https://github.com/ameshkov/safari-blocker)
 
@@ -34,15 +34,17 @@ This repo is template-ready. Replace placeholders:
 | `project.yml` | `PRODUCT_BUNDLE_IDENTIFIER` (both targets), `APP_GROUP_ID` |
 | `MailTrackerBlockerApp/MailTrackerBlockerApp.entitlements` | App Group string |
 | `MailExtension/MailExtension.entitlements` | App Group string |
+| `MailExtension2/MailExtension2.entitlements` | App Group string |
 
 After replacement, values should look like this:
 - App bundle id: `com.acme.mail-tracker-blocker`
 - Extension bundle id: `com.acme.mail-tracker-blocker.MailExtension`
+- Extension 2 bundle id: `com.acme.mail-tracker-blocker.MailExtension2`
 - App Group: `group.com.acme.mail-tracker-blocker`
 
 ### 2. Set your Development Team
 
-In `project.yml` set `DEVELOPMENT_TEAM: YOUR_TEAM_ID` for both targets, or set Team in Xcode Signing & Capabilities.
+In `project.yml` set `DEVELOPMENT_TEAM: YOUR_TEAM_ID` for all targets, or set Team in Xcode Signing & Capabilities.
 
 ### 3. Enable the App Group
 
@@ -68,7 +70,9 @@ If you changed placeholders after generating once, run `make generate` again.
    - **Strip $domain=** — removes `domain=` modifiers before conversion (tests `if-domain` handling).
    - **Include css-display-none rules** — passes cosmetic `##selector` rules through the pipeline.
 4. Click **Run Pipeline**. The app converts the rules and saves the JSON to the shared App Group container.
-5. Open Mail.app → Settings → Extensions → enable **Mail Tracker Blocker Extension**.
+5. Open Mail.app → Settings → Extensions → enable both:
+   - **Mail Tracker Blocker Extension**
+   - **Mail Tracker Blocker Extension 2**
 6. Restart Mail.app to pick up the new rules.
 
 ---
@@ -85,7 +89,7 @@ Run with a `$domain=` rule first **without** Strip $domain=, then **with** it. C
 Enable **Include css-display-none rules**, add a `##img[width="1"][height="1"]` rule, and check in Accessibility Inspector whether the element is hidden after opening the email.
 
 ### Scenario 4 — Rule count budget
-Load a large filter list. The pipeline stats panel shows `finalJSONEntryCount / 150,000` and warns at 120,000.
+Load a large filter list. The pipeline stats panel shows total `finalJSONEntryCount / 300,000` and split counts per extension (`/ 150,000` each).
 
 ### Scenario 5 — Reload after update
 Edit `filter.txt`, click **Run Pipeline** again without restarting the app, and confirm Mail.app uses the updated rules.
@@ -98,6 +102,7 @@ Edit `filter.txt`, click **Run Pipeline** again without restarting the app, and 
 mail-tracker-blocker/
 ├── MailTrackerBlockerApp/   Container app (SwiftUI)
 ├── MailExtension/           MEContentBlocker extension
+├── MailExtension2/          Second MEContentBlocker extension
 ├── Shared/                  Code shared between both targets
 ├── filters/filter.txt       Sample test rules
 ├── project.yml              XcodeGen spec
