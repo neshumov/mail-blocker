@@ -10,16 +10,19 @@
 		0BE838BE7EC24D3708AD5ADF /* PerfClock.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10C3C47D8B8AF4D36CCAC0B /* PerfClock.swift */; };
 		0DD1A7DBBCF65C597A2A1208 /* DebugLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF08000A07BA221A7D50C459 /* DebugLogger.swift */; };
 		0DE4C66A6AAB735E3F46A7A1 /* DebugLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF08000A07BA221A7D50C459 /* DebugLogger.swift */; };
+		0FEE232BFF3FE6962C719076 /* RuntimeFlags.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19AE7CC8372D7D7D49CDD1AA /* RuntimeFlags.swift */; };
 		154B58714D0D55001391B24E /* ContentBlockerHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF7ACD887DEB8AD8006E97A0 /* ContentBlockerHandler.swift */; };
 		31251000960BC62BECF0C557 /* TrackerStatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355303911A03FB694B6EC4E4 /* TrackerStatsView.swift */; };
 		3211316F1EA29156AC9AE49B /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA0138FC405D78BB96BBB88 /* App.swift */; };
 		3A169C7442D0CD8526B32391 /* TestEmailGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151FAA1105F478A12A5A35AA /* TestEmailGenerator.swift */; };
+		3E6EB342D506DBCE54D6057D /* RulesSelfTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E32C3F33628A040BA8EC437 /* RulesSelfTest.swift */; };
 		4BCD6343687D5CC6473F233B /* SharedStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F54F31C42A34E6CF8358F78A /* SharedStorage.swift */; };
 		4D40E719F16DC2555408356A /* DebugLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF08000A07BA221A7D50C459 /* DebugLogger.swift */; };
 		4EF0B4A5C14743EB669731D8 /* DebugLogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA386589CA495A4E64442728 /* DebugLogView.swift */; };
 		6D40FB7F09B1B05479D60F67 /* MessageSecurityHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86E2886E86F85E1252590857 /* MessageSecurityHandler.swift */; };
 		71F3FF5E90DCC36A72874960 /* TestEmailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD515F9D4E1FBEB62AACFFD0 /* TestEmailsView.swift */; };
 		74382658BEF3060B91C73FF7 /* TrackerEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 809502DAB4E11AF6EAA0B444 /* TrackerEvent.swift */; };
+		77A33135A4CBC5A859087E0B /* RuntimeFlags.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19AE7CC8372D7D7D49CDD1AA /* RuntimeFlags.swift */; };
 		7ECE4303F8BABB8984B13143 /* AppGroupConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14E1C807E9F523D4E4F0E16A /* AppGroupConstants.swift */; };
 		7FFCC207D260C2702369C1FA /* TrackerEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 809502DAB4E11AF6EAA0B444 /* TrackerEvent.swift */; };
 		85E1E464D92D516A44ABC89A /* SharedStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F54F31C42A34E6CF8358F78A /* SharedStorage.swift */; };
@@ -36,6 +39,7 @@
 		DE82FB81A0AA7E8F1350FD89 /* ContentBlockerConverter in Frameworks */ = {isa = PBXBuildFile; productRef = 5CBA5ADD77134E61972B9E91 /* ContentBlockerConverter */; };
 		E8B1E2959410D0A07708CA16 /* MessageSecurityHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86E2886E86F85E1252590857 /* MessageSecurityHandler.swift */; };
 		F6221D76A8678F612F90498C /* MailExtensionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C1197DF3AC840E285EDCC6 /* MailExtensionHandler.swift */; };
+		F984FEE713E0EA0A21735CA2 /* RuntimeFlags.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19AE7CC8372D7D7D49CDD1AA /* RuntimeFlags.swift */; };
 		FB5C5B1FC2836636884326C6 /* TrackerEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 809502DAB4E11AF6EAA0B444 /* TrackerEvent.swift */; };
 		FBE9BA28FA6EFD0F47D9D16C /* MailExtension2.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = FC358134A1FF3681D7B85081 /* MailExtension2.appex */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		FC5E3770A76A78DF79208C28 /* ContentBlockerHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF7ACD887DEB8AD8006E97A0 /* ContentBlockerHandler.swift */; };
@@ -77,8 +81,10 @@
 		14E1C807E9F523D4E4F0E16A /* AppGroupConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGroupConstants.swift; sourceTree = "<group>"; };
 		151FAA1105F478A12A5A35AA /* TestEmailGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestEmailGenerator.swift; sourceTree = "<group>"; };
 		178A52A3E59AF4FB819F9BB8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		19AE7CC8372D7D7D49CDD1AA /* RuntimeFlags.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeFlags.swift; sourceTree = "<group>"; };
 		355303911A03FB694B6EC4E4 /* TrackerStatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerStatsView.swift; sourceTree = "<group>"; };
 		438DC84AD2D02EC409F06AE0 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		5E32C3F33628A040BA8EC437 /* RulesSelfTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RulesSelfTest.swift; sourceTree = "<group>"; };
 		65B6FA15EB157A2450CE577F /* MailExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MailExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		809502DAB4E11AF6EAA0B444 /* TrackerEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerEvent.swift; sourceTree = "<group>"; };
 		86E2886E86F85E1252590857 /* MessageSecurityHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSecurityHandler.swift; sourceTree = "<group>"; };
@@ -117,6 +123,7 @@
 				EA386589CA495A4E64442728 /* DebugLogView.swift */,
 				BD0D3E6071B5BBAE1BC2F8AD /* Info.plist */,
 				EA45DFA35F714DF19886BD1D /* RulesPipeline.swift */,
+				5E32C3F33628A040BA8EC437 /* RulesSelfTest.swift */,
 				151FAA1105F478A12A5A35AA /* TestEmailGenerator.swift */,
 				AD515F9D4E1FBEB62AACFFD0 /* TestEmailsView.swift */,
 				355303911A03FB694B6EC4E4 /* TrackerStatsView.swift */,
@@ -160,6 +167,7 @@
 				14E1C807E9F523D4E4F0E16A /* AppGroupConstants.swift */,
 				EF08000A07BA221A7D50C459 /* DebugLogger.swift */,
 				C10C3C47D8B8AF4D36CCAC0B /* PerfClock.swift */,
+				19AE7CC8372D7D7D49CDD1AA /* RuntimeFlags.swift */,
 				F54F31C42A34E6CF8358F78A /* SharedStorage.swift */,
 				809502DAB4E11AF6EAA0B444 /* TrackerEvent.swift */,
 			);
@@ -296,6 +304,8 @@
 				0DD1A7DBBCF65C597A2A1208 /* DebugLogger.swift in Sources */,
 				D18CDDE4A6F467C9F7ABBADF /* PerfClock.swift in Sources */,
 				9056CD7096566E78C0A9003F /* RulesPipeline.swift in Sources */,
+				3E6EB342D506DBCE54D6057D /* RulesSelfTest.swift in Sources */,
+				F984FEE713E0EA0A21735CA2 /* RuntimeFlags.swift in Sources */,
 				4BCD6343687D5CC6473F233B /* SharedStorage.swift in Sources */,
 				3A169C7442D0CD8526B32391 /* TestEmailGenerator.swift in Sources */,
 				71F3FF5E90DCC36A72874960 /* TestEmailsView.swift in Sources */,
@@ -314,6 +324,7 @@
 				F6221D76A8678F612F90498C /* MailExtensionHandler.swift in Sources */,
 				E8B1E2959410D0A07708CA16 /* MessageSecurityHandler.swift in Sources */,
 				9ADBA018F3E70F363B10E059 /* PerfClock.swift in Sources */,
+				0FEE232BFF3FE6962C719076 /* RuntimeFlags.swift in Sources */,
 				85E1E464D92D516A44ABC89A /* SharedStorage.swift in Sources */,
 				7FFCC207D260C2702369C1FA /* TrackerEvent.swift in Sources */,
 			);
@@ -329,6 +340,7 @@
 				C99CBD89EF1299CE058FBEE0 /* MailExtensionHandler.swift in Sources */,
 				6D40FB7F09B1B05479D60F67 /* MessageSecurityHandler.swift in Sources */,
 				0BE838BE7EC24D3708AD5ADF /* PerfClock.swift in Sources */,
+				77A33135A4CBC5A859087E0B /* RuntimeFlags.swift in Sources */,
 				B92BAFB80F32AD9DE5F0DEC8 /* SharedStorage.swift in Sources */,
 				FB5C5B1FC2836636884326C6 /* TrackerEvent.swift in Sources */,
 			);

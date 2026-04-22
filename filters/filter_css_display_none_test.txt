@@ -1,0 +1,4 @@
+! CSS display-none test for Mail rendering context
+! Requires: Include css-display-none rules = ON
+
+##[data-mtb-css="hide"]

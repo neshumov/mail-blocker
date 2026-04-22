@@ -1,0 +1,4 @@
+! CSS display-none id-based test for Mail rendering context
+! Requires: Include css-display-none rules = ON
+
+##div#mtb-hide-block

@@ -12,6 +12,10 @@ struct ContentView: View {
     @State private var reloadStatus: String = ""
     @State private var showStats: Bool = false
     @State private var showTestEmails: Bool = false
+    @State private var disableMessageSecurityHandler: Bool = RuntimeFlags.disableMessageSecurityHandler
+    @State private var selfTestTrackerHost: String = "track.customer.io"
+    @State private var selfTestControlHost: String = "httpbin.org"
+    @State private var selfTestResult: RulesSelfTestResult?
 
     var body: some View {
         ScrollView {
@@ -21,6 +25,8 @@ struct ContentView: View {
                 settingsSection
                 Divider()
                 runSection
+                Divider()
+                selfTestSection
                 if let result = pipelineResult {
                     Divider()
                     statsSection(result: result)
@@ -74,6 +80,11 @@ struct ContentView: View {
                 .help("Removes domain= option from rules — tests if-domain/unless-domain behaviour in Mail.app")
             Toggle("Include css-display-none rules", isOn: $includeCSSDisplayNone)
                 .help("Passes cosmetic ##selector rules through the pipeline — tests CSS visibility in Mail.app")
+            Toggle("Test mode: disable MessageSecurityHandler", isOn: $disableMessageSecurityHandler)
+                .help("Turns off security handler checks/banner so you can validate pure MEContentBlocker network behavior in Proxyman.")
+                .onChange(of: disableMessageSecurityHandler) { enabled in
+                    RuntimeFlags.setDisableMessageSecurityHandler(enabled)
+                }
         }
     }
 
@@ -143,6 +154,72 @@ struct ContentView: View {
                 .font(.headline)
             Text("Open Mail → Settings → Extensions → enable **Mail Tracker Blocker Extension** and **Mail Tracker Blocker Extension 2**, then run the pipeline.")
                 .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    private var selfTestSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Label("Self-test", systemImage: "checkmark.shield")
+                .font(.headline)
+
+            HStack(spacing: 12) {
+                TextField("Tracker host", text: $selfTestTrackerHost)
+                    .textFieldStyle(.roundedBorder)
+                TextField("Control host", text: $selfTestControlHost)
+                    .textFieldStyle(.roundedBorder)
+                Button("Run self-test") {
+                    selfTestResult = RulesSelfTest.run(
+                        trackerHost: selfTestTrackerHost,
+                        controlHost: selfTestControlHost
+                    )
+                }
+                .buttonStyle(.borderedProminent)
+            }
+
+            if let result = selfTestResult {
+                let trackerTotal = result.trackerHitsExt1 + result.trackerHitsExt2
+                let controlTotal = result.controlHitsExt1 + result.controlHitsExt2
+
+                Group {
+                    Text("Rules in storage: ext1 \(result.ext1Entries) entries / \(result.ext1Bytes) bytes, ext2 \(result.ext2Entries) entries / \(result.ext2Bytes) bytes")
+                    Text("Tracker '\(result.trackerHost)' mentions in url-filter: \(trackerTotal) (ext1: \(result.trackerHitsExt1), ext2: \(result.trackerHitsExt2))")
+                        .foregroundColor(result.trackerPresentInRules ? .green : .red)
+                    Text("Control '\(result.controlHost)' mentions in url-filter: \(controlTotal) (expected 0)")
+                        .foregroundColor(result.controlUnexpectedlyBlocked ? .orange : .green)
+                    Text("blocked_domains contains tracker: \(result.blockedDomainsHasTracker ? "yes" : "no"), suffix: \(result.blockedDomainsHasTrackerSuffix ? "yes" : "no")")
+                        .foregroundColor((result.blockedDomainsHasTracker || result.blockedDomainsHasTrackerSuffix) ? .green : .secondary)
+                    Text("css-display-none rules: \(result.cssDisplayNoneTotal) (ext1: \(result.cssDisplayNoneCountExt1), ext2: \(result.cssDisplayNoneCountExt2))")
+                        .foregroundColor(result.cssDisplayNoneTotal > 0 ? .green : .secondary)
+                    Text("CSS selector probe '\(result.cssSelectorProbe)': \(result.cssSelectorProbeTotalHits) hit(s)")
+                        .foregroundColor(result.cssSelectorProbeTotalHits > 0 ? .green : .secondary)
+                }
+                .font(.callout)
+
+                if !result.trackerSamplesExt1.isEmpty || !result.trackerSamplesExt2.isEmpty {
+                    VStack(alignment: .leading, spacing: 2) {
+                        if !result.trackerSamplesExt1.isEmpty {
+                            Text("Samples ext1:")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            ForEach(result.trackerSamplesExt1, id: \.self) { sample in
+                                Text(sample)
+                                    .font(.system(.caption2, design: .monospaced))
+                                    .lineLimit(1)
+                            }
+                        }
+                        if !result.trackerSamplesExt2.isEmpty {
+                            Text("Samples ext2:")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            ForEach(result.trackerSamplesExt2, id: \.self) { sample in
+                                Text(sample)
+                                    .font(.system(.caption2, design: .monospaced))
+                                    .lineLimit(1)
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 

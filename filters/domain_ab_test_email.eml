@@ -1,0 +1,14 @@
+From: QA Sender <news@sender.mtb-test.example>
+To: me@localhost
+Subject: [MTB A/B] if-domain test for track.customer.io
+Date: Wed, 22 Apr 2026 09:40:00 +0300
+Message-ID: <mtb-domain-ab-1@localhost>
+MIME-Version: 1.0
+Content-Type: text/html; charset=UTF-8
+
+<html><body style="font-family:sans-serif;padding:16px">
+<h3>MailKit if-domain A/B</h3>
+<p>Pixel URL:</p>
+<img src="https://track.customer.io/e/o/abtest-001" width="1" height="1" alt="[pixel]" />
+<p>If this request is blocked, Proxyman should show rule/block behavior for <code>track.customer.io</code>.</p>
+</body></html>

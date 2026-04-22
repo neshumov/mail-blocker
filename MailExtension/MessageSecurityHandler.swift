@@ -17,6 +17,10 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
     // MARK: - MEMessageDecoder
 
     func decodedMessage(forMessageData data: Data) -> MEDecodedMessage? {
+        if RuntimeFlags.disableMessageSecurityHandler {
+            return nil
+        }
+
         let t0 = PerfClock.now()
         var stage: [String] = []
         func mark(_ name: String, _ started: PerfClock.Instant) {

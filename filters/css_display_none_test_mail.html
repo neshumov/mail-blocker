@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CSS display-none Mail test</title>
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; margin: 24px; line-height: 1.5;">
+  <h2 style="margin: 0 0 12px;">css-display-none check</h2>
+
+  <p style="margin: 0 0 8px;">This green block must remain visible:</p>
+  <div data-mtb-css="show" style="padding: 10px; background: #e6ffed; border: 1px solid #9be9a8;">
+    VISIBLE CONTROL BLOCK
+  </div>
+
+  <p style="margin: 12px 0 8px;">This red block must be hidden by css-display-none:</p>
+  <div data-mtb-css="hide" style="padding: 10px; background: #ffeef0; border: 1px solid #ff7b72;">
+    MUST BE HIDDEN (if css-display-none works)
+  </div>
+
+  <p style="margin: 12px 0 8px;">Remote image request should still go through (hide != network block):</p>
+  <img src="https://httpbin.org/image/png?scenario=css-display-none&nonce=css_20260422_001" width="140" height="140" alt="control-image" style="border:1px solid #ddd;" />
+
+  <hr style="margin: 16px 0;" />
+  <p style="font-size: 12px; color: #666; margin: 0;">File: css_display_none_test_mail.html</p>
+</body>
+</html>

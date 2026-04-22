@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mail Tracker A/B - OFF</title>
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; margin: 24px; line-height: 1.5;">
+  <h2 style="margin: 0 0 12px;">A/B Test - OFF (with $domain)</h2>
+  <p style="margin: 0 0 12px;">If this file is rendered as HTML, two remote images should be requested when not blocked by rules.</p>
+
+  <p style="margin: 0 0 8px;"><strong>Tracker image</strong> (expected behavior depends on OFF/ON filter):</p>
+  <img
+    src="https://track.customer.io/e/o/abtest-001?run=OFF&nonce=off_20260422_002"
+    alt="tracker-off"
+    width="1"
+    height="1"
+    style="display:block;border:0;outline:none;"
+  />
+
+  <p style="margin: 12px 0 8px;"><strong>Control image</strong> (should stay allowed):</p>
+  <img
+    src="https://httpbin.org/image/png?run=OFF&nonce=off_20260422_002"
+    alt="control-off"
+    width="160"
+    height="160"
+    style="display:block;border:1px solid #ddd;"
+  />
+
+  <hr style="margin: 16px 0;" />
+  <p style="font-size: 12px; color: #666; margin: 0;">File: domain_ab_run_off.html</p>
+</body>
+</html>

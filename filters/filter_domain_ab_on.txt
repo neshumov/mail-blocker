@@ -1,0 +1,2 @@
+! A/B ON: domain stripped version of the same rule
+||track.customer.io^$image

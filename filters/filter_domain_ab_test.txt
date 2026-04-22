@@ -1,0 +1,2 @@
+! A/B test for $domain behavior in Mail.app
+||mtb-test-scoped.example^$image,domain=sender.mtb-test.example

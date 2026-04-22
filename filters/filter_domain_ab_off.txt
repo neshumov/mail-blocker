@@ -1,0 +1,2 @@
+! A/B OFF: keep $domain modifier
+||track.customer.io^$image,domain=sender.mtb-test.example
